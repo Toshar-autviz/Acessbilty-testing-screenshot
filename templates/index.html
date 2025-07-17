@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Accessibility Testing Tool</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: 300;
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .main-content {
+        padding: 40px;
+      }
+
+      .url-input-section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border: 2px solid #e9ecef;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .url-input {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      .url-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .test-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        min-width: 150px;
+      }
+
+      .test-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .test-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results-header {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .results-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .summary-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        border-left: 4px solid #667eea;
+      }
+
+      .summary-card h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .summary-card .count {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .severity-high {
+        color: #e74c3c !important;
+      }
+      .severity-medium {
+        color: #f39c12 !important;
+      }
+      .severity-low {
+        color: #f1c40f !important;
+      }
+
+      .screenshot-section {
+        margin-bottom: 30px;
+      }
+
+      .screenshot-container {
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        background: #f8f9fa;
+        text-align: center;
+        position: relative;
+      }
+      .wave-issue-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .wave-issue-icon {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #e74c3c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #e74c3c;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        pointer-events: auto;
+        z-index: 2;
+        transition: transform 0.1s;
+      }
+      .wave-issue-icon.medium {
+        border-color: #f39c12;
+        color: #f39c12;
+      }
+      .wave-issue-icon.low {
+        border-color: #f1c40f;
+        color: #f1c40f;
+      }
+      .wave-issue-icon:hover {
+        transform: scale(1.15);
+        z-index: 10;
+      }
+      .wave-issue-icon svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+      }
+      .issue-card.selected {
+        outline: 3px solid #764ba2;
+        background: #f3eaff;
+        transition: outline 0.2s, background 0.2s;
+      }
+      .wave-tooltip {
+        position: absolute;
+        left: 32px;
+        top: 0;
+        min-width: 220px;
+        background: #fff;
+        color: #222;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13);
+        padding: 14px 18px;
+        font-size: 1em;
+        z-index: 100;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .wave-issue-icon:hover + .wave-tooltip,
+      .wave-issue-icon:focus + .wave-tooltip {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .screenshot-image {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .issues-section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+      }
+
+      .issue-card {
+        background: white;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #ddd;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .issue-card.high {
+        border-left-color: #e74c3c;
+      }
+
+      .issue-card.medium {
+        border-left-color: #f39c12;
+      }
+
+      .issue-card.low {
+        border-left-color: #f1c40f;
+      }
+
+      .issue-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .issue-type {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1em;
+      }
+
+      .issue-severity {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .issue-severity.high {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .issue-severity.medium {
+        background: #f39c12;
+        color: white;
+      }
+
+      .issue-severity.low {
+        background: #f1c40f;
+        color: #333;
+      }
+
+      .issue-description {
+        margin-bottom: 15px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .issue-recommendation {
+        background: #e8f5e8;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #27ae60;
+        margin-top: 15px;
+      }
+
+      .issue-recommendation strong {
+        color: #27ae60;
+      }
+
+      .error-message {
+        background: #fee;
+        color: #c33;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #fcc;
+        margin-bottom: 20px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+      }
+
+      .legend-color.high {
+        background: #e74c3c;
+      }
+      .legend-color.medium {
+        background: #f39c12;
+      }
+      .legend-color.low {
+        background: #f1c40f;
+      }
+
+      .wave-filter-bar {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 18px;
+        margin-top: 8px;
+        font-size: 1.08em;
+      }
+      .wave-filter-bar label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .wave-filter-bar input[type="checkbox"] {
+        accent-color: #764ba2;
+        width: 18px;
+        height: 18px;
+      }
+
+      @media (max-width: 768px) {
+        .input-group {
+          flex-direction: column;
+        }
+
+        .results-summary {
+          grid-template-columns: 1fr;
+        }
+
+        .legend {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Web Accessibility Testing Tool</h1>
+        <p>
+          Comprehensive accessibility testing including color contrast, alt
+          text, form labels, keyboard navigation, and more.
+        </p>
+      </div>
+
+      <div class="main-content">
+        <div class="url-input-section">
+          <div class="input-group">
+            <input
+              type="url"
+              id="urlInput"
+              class="url-input"
+              placeholder="Enter website URL (e.g., https://example.com)"
+            />
+            <button id="testButton" class="test-button">
+              Run Accessibility Test
+            </button>
+          </div>
+        </div>
+
+        <div id="loading" class="loading">
+          <div class="loading-spinner"></div>
+          <p>Testing website accessibility... This may take a few moments.</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none"></div>
+
+        <div id="results" class="results">
+          <div class="results-header">
+            <h2>Accessibility Test Results</h2>
+            <p id="testedUrl"></p>
+          </div>
+
+          <div
+            id="openaiSummarySection"
+            style="display: none; margin-bottom: 30px"
+          >
+            <div
+              style="
+                background: #f8f9fa;
+                border-left: 6px solid #764ba2;
+                border-radius: 10px;
+                padding: 24px;
+                box-shadow: 0 2px 10px rgba(102, 126, 234, 0.07);
+              "
+            >
+              <h3 style="color: #764ba2; margin-bottom: 12px">
+                AI-Powered Accessibility Summary & Recommendations
+              </h3>
+              <div
+                id="openaiSummaryText"
+                style="font-size: 1.1em; color: #333; line-height: 1.7"
+              ></div>
+            </div>
+          </div>
+
+          <div class="results-summary">
+            <div class="summary-card">
+              <h3>Total Issues</h3>
+              <div class="count" id="totalIssues">0</div>
+            </div>
+            <div class="summary-card">
+              <h3>High Severity</h3>
+              <div class="count severity-high" id="highSeverity">0</div>
+            </div>
+            <div class="summary-card">
+              <h3>Medium Severity</h3>
+              <div class="count severity-medium" id="mediumSeverity">0</div>
+            </div>
+            <div class="summary-card">
+              <h3>Low Severity</h3>
+              <div class="count severity-low" id="lowSeverity">0</div>
+            </div>
+          </div>
+
+          <div class="screenshot-section">
+            <h3>Page Screenshot with Issues Highlighted</h3>
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-color high"></div>
+                <span>High Severity</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color medium"></div>
+                <span>Medium Severity</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color low"></div>
+                <span>Low Severity</span>
+              </div>
+            </div>
+            <div class="wave-filter-bar">
+              <label
+                ><input type="checkbox" id="filterHigh" checked /> High</label
+              >
+              <label
+                ><input type="checkbox" id="filterMedium" checked />
+                Medium</label
+              >
+              <label
+                ><input type="checkbox" id="filterLow" checked /> Low</label
+              >
+            </div>
+            <div class="screenshot-container">
+              <div id="screenshots"></div>
+            </div>
+          </div>
+
+          <div class="issues-section">
+            <h3>Detailed Issues</h3>
+            <div id="issuesList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlInput = document.getElementById("urlInput");
+        const testButton = document.getElementById("testButton");
+        const loading = document.getElementById("loading");
+        const error = document.getElementById("error");
+        const results = document.getElementById("results");
+
+        testButton.addEventListener("click", runTest);
+        urlInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            runTest();
+          }
+        });
+
+        async function runTest() {
+          const url = urlInput.value.trim();
+
+          if (!url) {
+            showError("Please enter a valid URL");
+            return;
+          }
+
+          // Show loading state
+          loading.style.display = "block";
+          results.style.display = "none";
+          error.style.display = "none";
+          testButton.disabled = true;
+          testButton.textContent = "Testing...";
+
+          try {
+            const response = await fetch("/test", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ url: url }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+              showError(data.error);
+              return;
+            }
+
+            displayResults(data);
+          } catch (err) {
+            showError("Failed to test website: " + err.message);
+          } finally {
+            // Hide loading state
+            loading.style.display = "none";
+            testButton.disabled = false;
+            testButton.textContent = "Run Accessibility Test";
+          }
+        }
+
+        function showError(message) {
+          error.textContent = message;
+          error.style.display = "block";
+          results.style.display = "none";
+          loading.style.display = "none";
+        }
+
+        function displayResults(data) {
+          // Update summary
+          document.getElementById(
+            "testedUrl"
+          ).textContent = `Tested URL: ${data.url}`;
+          document.getElementById("totalIssues").textContent =
+            data.total_issues;
+          document.getElementById("highSeverity").textContent =
+            data.summary.high_severity;
+          document.getElementById("mediumSeverity").textContent =
+            data.summary.medium_severity;
+          document.getElementById("lowSeverity").textContent =
+            data.summary.low_severity;
+
+          // Update screenshots (multiple)
+          renderWaveScreenshots(data);
+
+          // Update issues list
+          const issuesList = document.getElementById("issuesList");
+          issuesList.innerHTML = "";
+
+          if (data.issues.length === 0) {
+            issuesList.innerHTML =
+              '<p style="text-align: center; color: #27ae60; font-size: 1.2em; padding: 40px;">🎉 No accessibility issues found! This website appears to follow accessibility best practices.</p>';
+          } else {
+            data.issues.forEach((issue) => {
+              const issueCard = createIssueCard(issue);
+              issuesList.appendChild(issueCard);
+            });
+          }
+
+          // Show results
+          results.style.display = "block";
+
+          // Fetch and display OpenAI summary
+          fetchOpenAISummary(data.main_issues);
+
+          // Scroll to results
+          results.scrollIntoView({ behavior: "smooth" });
+        }
+
+        async function fetchOpenAISummary(mainIssues) {
+          const section = document.getElementById("openaiSummarySection");
+          const textDiv = document.getElementById("openaiSummaryText");
+          if (!mainIssues || mainIssues.length === 0) {
+            section.style.display = "none";
+            return;
+          }
+          textDiv.innerHTML =
+            '<span style="color:#888;">Generating summary with AI...</span>';
+          section.style.display = "block";
+          try {
+            const response = await fetch("/summary", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ main_issues: mainIssues }),
+            });
+            const data = await response.json();
+            if (data.summary) {
+              textDiv.textContent = data.summary;
+            } else {
+              textDiv.innerHTML =
+                '<span style="color:#c33;">AI summary could not be generated.</span>';
+            }
+          } catch (err) {
+            textDiv.innerHTML =
+              '<span style="color:#c33;">AI summary error: ' +
+              err.message +
+              "</span>";
+          }
+        }
+
+        function createIssueCard(issue) {
+          const card = document.createElement("div");
+          card.className = `issue-card ${issue.severity.toLowerCase()}`;
+          if (issue.wave_id) card.setAttribute("data-wave-id", issue.wave_id);
+          card.innerHTML = `
+                    <div class="issue-header">
+                        <div class="issue-type">${issue.type}</div>
+                        <div class="issue-severity ${issue.severity.toLowerCase()}">${
+            issue.severity
+          }</div>
+                    </div>
+                    <div class="issue-description">
+                        <strong>Element:</strong> ${issue.element}<br>
+                        <strong>Description:</strong> ${issue.description}
+                        ${
+                          issue.location
+                            ? `<br><strong>Location:</strong> x: ${issue.location.x}, y: ${issue.location.y}`
+                            : ""
+                        }
+                    </div>
+                    <div class="issue-recommendation">
+                        <strong>Recommendation:</strong> ${issue.recommendation}
+                    </div>
+                `;
+
+          return card;
+        }
+
+        function renderWaveScreenshots(data) {
+          const screenshotsDiv = document.getElementById("screenshots");
+          screenshotsDiv.innerHTML = "";
+          const filterHigh = document.getElementById("filterHigh").checked;
+          const filterMedium = document.getElementById("filterMedium").checked;
+          const filterLow = document.getElementById("filterLow").checked;
+          if (data.screenshots && data.screenshots.length > 0) {
+            data.screenshots.forEach((imgData, idx) => {
+              const wrapper = document.createElement("div");
+              wrapper.style.position = "relative";
+              wrapper.style.display = "inline-block";
+              wrapper.style.marginBottom = "20px";
+              const img = document.createElement("img");
+              img.className = "screenshot-image";
+              img.src = `data:image/png;base64,${imgData}`;
+              img.alt = `Website screenshot part ${
+                idx + 1
+              } with accessibility issues highlighted`;
+              const overlay = document.createElement("div");
+              overlay.className = "wave-issue-overlay";
+              if (data.wave_issues && data.wave_issues.length > 0) {
+                img.onload = function () {
+                  const imgHeight = img.height;
+                  const imgWidth = img.width;
+                  const naturalHeight = img.naturalHeight;
+                  const naturalWidth = img.naturalWidth;
+                  const scaleY = imgHeight / naturalHeight;
+                  const scaleX = imgWidth / naturalWidth;
+                  const viewportHeight = imgHeight;
+                  const scrollY =
+                    idx * (naturalHeight / data.screenshots.length);
+                  data.wave_issues.forEach((issue, iidx) => {
+                    // Filter by severity
+                    if (
+                      (issue.severity === "High" && !filterHigh) ||
+                      (issue.severity === "Medium" && !filterMedium) ||
+                      (issue.severity === "Low" && !filterLow)
+                    ) {
+                      return;
+                    }
+                    if (
+                      issue.y >= scrollY &&
+                      issue.y <
+                        scrollY + naturalHeight / data.screenshots.length
+                    ) {
+                      const icon = document.createElement("div");
+                      icon.className =
+                        "wave-issue-icon " + issue.severity.toLowerCase();
+                      icon.title = issue.type;
+                      icon.tabIndex = 0;
+                      icon.setAttribute("data-wave-id", issue.wave_id);
+                      // SVG icons by severity
+                      let svg = "";
+                      if (issue.severity === "High") {
+                        svg = `<svg viewBox='0 0 24 24' fill='none'><circle cx='12' cy='12' r='11' stroke='#e74c3c' stroke-width='2'/><path d='M12 7v5' stroke='#e74c3c' stroke-width='2' stroke-linecap='round'/><circle cx='12' cy='16' r='1.5' fill='#e74c3c'/></svg>`;
+                      } else if (issue.severity === "Medium") {
+                        svg = `<svg viewBox='0 0 24 24' fill='none'><circle cx='12' cy='12' r='11' stroke='#f39c12' stroke-width='2'/><path d='M12 8v5' stroke='#f39c12' stroke-width='2' stroke-linecap='round'/><circle cx='12' cy='16' r='1.5' fill='#f39c12'/></svg>`;
+                      } else {
+                        svg = `<svg viewBox='0 0 24 24' fill='none'><circle cx='12' cy='12' r='11' stroke='#3498db' stroke-width='2'/><path d='M12 10v2' stroke='#3498db' stroke-width='2' stroke-linecap='round'/><circle cx='12' cy='16' r='1.5' fill='#3498db'/></svg>`;
+                      }
+                      icon.innerHTML = svg;
+                      // Position icon (scale coordinates)
+                      icon.style.left = issue.x * scaleX - 14 + "px";
+                      icon.style.top = (issue.y - scrollY) * scaleY - 14 + "px";
+                      // Tooltip
+                      const tooltip = document.createElement("div");
+                      tooltip.className = "wave-tooltip";
+                      tooltip.innerHTML = `<strong>${issue.type}</strong><br>${issue.description}<br><em style='color:#764ba2;'>${issue.recommendation}</em>`;
+                      icon.addEventListener("mouseenter", () => {
+                        tooltip.style.opacity = 1;
+                        tooltip.style.pointerEvents = "auto";
+                      });
+                      icon.addEventListener("mouseleave", () => {
+                        tooltip.style.opacity = 0;
+                        tooltip.style.pointerEvents = "none";
+                      });
+                      icon.addEventListener("focus", () => {
+                        tooltip.style.opacity = 1;
+                        tooltip.style.pointerEvents = "auto";
+                      });
+                      icon.addEventListener("blur", () => {
+                        tooltip.style.opacity = 0;
+                        tooltip.style.pointerEvents = "none";
+                      });
+                      // Click-to-scroll
+                      icon.addEventListener("click", () => {
+                        const card = document.querySelector(
+                          `.issue-card[data-wave-id='${issue.wave_id}']`
+                        );
+                        if (card) {
+                          card.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                          });
+                          document
+                            .querySelectorAll(".issue-card.selected")
+                            .forEach((el) => el.classList.remove("selected"));
+                          card.classList.add("selected");
+                          setTimeout(
+                            () => card.classList.remove("selected"),
+                            2000
+                          );
+                        }
+                      });
+                      overlay.appendChild(icon);
+                      overlay.appendChild(tooltip);
+                    }
+                  });
+                };
+              }
+              wrapper.appendChild(img);
+              wrapper.appendChild(overlay);
+              screenshotsDiv.appendChild(wrapper);
+            });
+          }
+        }
+
+        // Add filter event listeners
+        document.getElementById("filterHigh").addEventListener("change", () => {
+          if (window.lastResultsData)
+            renderWaveScreenshots(window.lastResultsData);
+        });
+        document
+          .getElementById("filterMedium")
+          .addEventListener("change", () => {
+            if (window.lastResultsData)
+              renderWaveScreenshots(window.lastResultsData);
+          });
+        document.getElementById("filterLow").addEventListener("change", () => {
+          if (window.lastResultsData)
+            renderWaveScreenshots(window.lastResultsData);
+        });
+        // Store last results for filtering
+        function displayResults(data) {
+          window.lastResultsData = data;
+          // Update summary
+          document.getElementById(
+            "testedUrl"
+          ).textContent = `Tested URL: ${data.url}`;
+          document.getElementById("totalIssues").textContent =
+            data.total_issues;
+          document.getElementById("highSeverity").textContent =
+            data.summary.high_severity;
+          document.getElementById("mediumSeverity").textContent =
+            data.summary.medium_severity;
+          document.getElementById("lowSeverity").textContent =
+            data.summary.low_severity;
+
+          // Update screenshots (multiple)
+          renderWaveScreenshots(data);
+
+          // Update issues list
+          const issuesList = document.getElementById("issuesList");
+          issuesList.innerHTML = "";
+
+          if (data.issues.length === 0) {
+            issuesList.innerHTML =
+              '<p style="text-align: center; color: #27ae60; font-size: 1.2em; padding: 40px;">🎉 No accessibility issues found! This website appears to follow accessibility best practices.</p>';
+          } else {
+            data.issues.forEach((issue) => {
+              const issueCard = createIssueCard(issue);
+              issuesList.appendChild(issueCard);
+            });
+          }
+
+          // Show results
+          results.style.display = "block";
+
+          // Fetch and display OpenAI summary
+          fetchOpenAISummary(data.main_issues);
+
+          // Scroll to results
+          results.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    </script>
+  </body>
+</html>
