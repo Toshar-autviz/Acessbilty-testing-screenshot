@@ -14,6 +14,8 @@ import json
 import xml.etree.ElementTree as ET
 from urllib.robotparser import RobotFileParser
 import re
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 class WebsiteAnalyzer:
     def __init__(self):
@@ -22,19 +24,33 @@ class WebsiteAnalyzer:
         self.discovered_pages = []
         self.base_domain = None
     
+    # def setup_driver(self):
+    #     """Setup Chrome WebDriver with options"""
+    #     chrome_options = Options()
+    #     chrome_options.add_argument("--headless")  # Run in background
+    #     chrome_options.add_argument("--no-sandbox")
+    #     chrome_options.add_argument("--disable-dev-shm-usage")
+    #     chrome_options.add_argument("--window-size=1920,1080")
+        
+    #     try:
+    #         self.driver = webdriver.Chrome(options=chrome_options)
+    #     except Exception as e:
+    #         print(f"Error setting up Chrome driver: {e}")
+    #         print("Make sure ChromeDriver is installed and in your PATH")
+
     def setup_driver(self):
-        """Setup Chrome WebDriver with options"""
         chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Run in background
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--window-size=1920,1080")
         
+        # This automatically downloads and manages ChromeDriver
+        service = Service(ChromeDriverManager().install())
         try:
-            self.driver = webdriver.Chrome(options=chrome_options)
+            self.driver = webdriver.Chrome(service=service, options=chrome_options)
         except Exception as e:
-            print(f"Error setting up Chrome driver: {e}")
-            print("Make sure ChromeDriver is installed and in your PATH")
+            print(e)
+            print("error in chrome setup")
     
     def discover_pages(self, base_url, max_pages=50):
         """Discover all available pages on the website"""
