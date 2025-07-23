@@ -150,45 +150,45 @@
 #                 sitemaps.append(sitemap_url)
 #         return sitemaps
     
-#     def _crawl_internal_links(self, base_url, max_depth=2):
-#         """Crawl website for internal links"""
-#         urls = set()
-#         visited = set()
-#         to_visit = [(base_url, 0)]
+    # def _crawl_internal_links(self, base_url, max_depth=2):
+    #     """Crawl website for internal links"""
+    #     urls = set()
+    #     visited = set()
+    #     to_visit = [(base_url, 0)]
         
-#         while to_visit and len(urls) < 30:  # Limit crawling
-#             current_url, depth = to_visit.pop(0)
+    #     while to_visit and len(urls) < 30:  # Limit crawling
+    #         current_url, depth = to_visit.pop(0)
             
-#             if current_url in visited or depth > max_depth:
-#                 continue
+    #         if current_url in visited or depth > max_depth:
+    #             continue
                 
-#             visited.add(current_url)
+    #         visited.add(current_url)
             
-#             try:
-#                 if self.driver:
-#                     self.driver.get(current_url)
-#                     time.sleep(1)
-#                     html_content = self.driver.page_source
-#                 else:
-#                     response = requests.get(current_url, timeout=10)
-#                     html_content = response.text
+    #         try:
+    #             if self.driver:
+    #                 self.driver.get(current_url)
+    #                 time.sleep(1)
+    #                 html_content = self.driver.page_source
+    #             else:
+    #                 response = requests.get(current_url, timeout=10)
+    #                 html_content = response.text
                 
-#                 soup = BeautifulSoup(html_content, 'html.parser')
+    #             soup = BeautifulSoup(html_content, 'html.parser')
                 
-#                 # Find all links
-#                 for link in soup.find_all('a', href=True):
-#                     href = link['href']
-#                     full_url = urljoin(current_url, href)
+    #             # Find all links
+    #             for link in soup.find_all('a', href=True):
+    #                 href = link['href']
+    #                 full_url = urljoin(current_url, href)
                     
-#                     if self._is_valid_page_url(full_url):
-#                         urls.add(full_url)
-#                         if depth < max_depth:
-#                             to_visit.append((full_url, depth + 1))
+    #                 if self._is_valid_page_url(full_url):
+    #                     urls.add(full_url)
+    #                     if depth < max_depth:
+    #                         to_visit.append((full_url, depth + 1))
                             
-#             except Exception as e:
-#                 print(f"Error crawling {current_url}: {e}")
+    #         except Exception as e:
+    #             print(f"Error crawling {current_url}: {e}")
         
-#         return urls
+    #     return urls
     
 #     def _check_common_pages(self, base_url):
 #         """Check for common page patterns"""
@@ -674,18 +674,14 @@ class WebsiteAnalyzer:
         
         for sitemap_url in sitemap_urls:
             try:
-                response = requests.get(sitemap_url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+                response = requests.get(sitemap_url, timeout=10)
                 if response.status_code == 200:
                     if 'sitemap' in sitemap_url.lower():
                         urls.update(self._parse_sitemap(response.text))
                     elif 'robots.txt' in sitemap_url:
                         sitemap_from_robots = self._get_sitemap_from_robots(response.text)
                         for sm_url in sitemap_from_robots:
-                            sm_response = requests.get(sm_url, timeout=10, headers={
-                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                            })
+                            sm_response = requests.get(sm_url, timeout=10)
                             if sm_response.status_code == 200:
                                 urls.update(self._parse_sitemap(sm_response.text))
             except Exception as e:
@@ -705,9 +701,7 @@ class WebsiteAnalyzer:
                 if loc is not None:
                     # Fetch individual sitemap
                     try:
-                        response = requests.get(loc.text, timeout=10, headers={
-                            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                        })
+                        response = requests.get(loc.text, timeout=10)
                         if response.status_code == 200:
                             urls.update(self._parse_sitemap(response.text))
                     except:
@@ -738,6 +732,49 @@ class WebsiteAnalyzer:
                 sitemaps.append(sitemap_url)
         return sitemaps
     
+    # def _crawl_internal_links(self, base_url, max_depth=2):
+    #     """Crawl website for internal links"""
+    #     urls = set()
+    #     visited = set()
+    #     to_visit = [(base_url, 0)]
+        
+    #     while to_visit and len(urls) < 30:  # Limit crawling
+    #         current_url, depth = to_visit.pop(0)
+            
+    #         if current_url in visited or depth > max_depth:
+    #             continue
+                
+    #         visited.add(current_url)
+            
+    #         try:
+    #             if self.driver:
+    #                 self.driver.set_page_load_timeout(15)  # Set timeout
+    #                 self.driver.get(current_url)
+    #                 time.sleep(2)  # Increased wait time
+    #                 html_content = self.driver.page_source
+    #             else:
+    #                 response = requests.get(current_url, timeout=10, headers={
+    #                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+    #                 })
+    #                 html_content = response.text
+                
+    #             soup = BeautifulSoup(html_content, 'html.parser')
+                
+    #             # Find all links
+    #             for link in soup.find_all('a', href=True):
+    #                 href = link['href']
+    #                 full_url = urljoin(current_url, href)
+                    
+    #                 if self._is_valid_page_url(full_url):
+    #                     urls.add(full_url)
+    #                     if depth < max_depth:
+    #                         to_visit.append((full_url, depth + 1))
+                            
+    #         except Exception as e:
+    #             print(f"Error crawling {current_url}: {e}")
+        
+    #     return urls
+
     def _crawl_internal_links(self, base_url, max_depth=2):
         """Crawl website for internal links"""
         urls = set()
@@ -754,14 +791,11 @@ class WebsiteAnalyzer:
             
             try:
                 if self.driver:
-                    self.driver.set_page_load_timeout(15)  # Set timeout
                     self.driver.get(current_url)
-                    time.sleep(2)  # Increased wait time
+                    time.sleep(1)
                     html_content = self.driver.page_source
                 else:
-                    response = requests.get(current_url, timeout=10, headers={
-                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                    })
+                    response = requests.get(current_url, timeout=10)
                     html_content = response.text
                 
                 soup = BeautifulSoup(html_content, 'html.parser')
@@ -780,6 +814,31 @@ class WebsiteAnalyzer:
                 print(f"Error crawling {current_url}: {e}")
         
         return urls
+
+    
+    # def _check_common_pages(self, base_url):
+    #     """Check for common page patterns"""
+    #     common_paths = [
+    #         '', '/', '/home', '/about', '/about-us', '/contact', '/contact-us',
+    #         '/services', '/products', '/blog', '/news', '/faq', '/help',
+    #         '/privacy', '/terms', '/careers', '/team', '/portfolio',
+    #         '/gallery', '/testimonials', '/pricing', '/login', '/register'
+    #     ]
+        
+    #     urls = set()
+    #     for path in common_paths:
+    #         test_url = urljoin(base_url, path)
+    #         try:
+    #             response = requests.head(test_url, timeout=5, headers={
+    #                 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+    #             })
+    #             if response.status_code == 200:
+    #                 urls.add(test_url)
+    #         except:
+    #             pass
+        
+    #     return urls
+
     
     def _check_common_pages(self, base_url):
         """Check for common page patterns"""
@@ -794,9 +853,7 @@ class WebsiteAnalyzer:
         for path in common_paths:
             test_url = urljoin(base_url, path)
             try:
-                response = requests.head(test_url, timeout=5, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+                response = requests.head(test_url, timeout=5)
                 if response.status_code == 200:
                     urls.add(test_url)
             except:
@@ -839,9 +896,7 @@ class WebsiteAnalyzer:
                 title = self.driver.title
                 html_content = self.driver.page_source
             else:
-                response = requests.get(url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+                response = requests.get(url, timeout=10)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 title = soup.title.string if soup.title else 'Untitled'
                 html_content = response.text
@@ -910,9 +965,10 @@ class WebsiteAnalyzer:
                 time.sleep(3)
                 html_content = self.driver.page_source
             else:
-                response = requests.get(url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+                # response = requests.get(url, timeout=10, headers={
+                #     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                # })
+                response = requests.get(url, timeout=10)
                 html_content = response.text
             
             soup = BeautifulSoup(html_content, 'html.parser')
