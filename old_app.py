@@ -513,470 +513,470 @@ if __name__ == '__main__':
         os.makedirs('templates')
     
     # Create the enhanced HTML template
-#     html_template = '''<!DOCTYPE html>
-# <html lang="en">
-# <head>
-#     <meta charset="UTF-8">
-#     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#     <title>Website Component Analyzer</title>
-#     <style>
-#         body {
-#             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-#             max-width: 1400px;
-#             margin: 0 auto;
-#             padding: 20px;
-#             background-color: #f5f5f5;
-#         }
-#         .container {
-#             background: white;
-#             padding: 30px;
-#             border-radius: 10px;
-#             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-#         }
-#         h1 {
-#             color: #333;
-#             text-align: center;
-#             margin-bottom: 30px;
-#         }
-#         .input-group {
-#             margin-bottom: 20px;
-#         }
-#         label {
-#             display: block;
-#             margin-bottom: 5px;
-#             font-weight: bold;
-#             color: #555;
-#         }
-#         input[type="url"], input[type="number"] {
-#             width: 100%;
-#             padding: 12px;
-#             border: 2px solid #ddd;
-#             border-radius: 5px;
-#             font-size: 16px;
-#             box-sizing: border-box;
-#         }
-#         input[type="number"] {
-#             width: 200px;
-#         }
-#         button {
-#             background-color: #007bff;
-#             color: white;
-#             padding: 12px 30px;
-#             border: none;
-#             border-radius: 5px;
-#             cursor: pointer;
-#             font-size: 16px;
-#             margin: 5px 10px 5px 0;
-#         }
-#         button:hover {
-#             background-color: #0056b3;
-#         }
-#         button:disabled {
-#             background-color: #ccc;
-#             cursor: not-allowed;
-#         }
-#         button.secondary {
-#             background-color: #6c757d;
-#         }
-#         button.secondary:hover {
-#             background-color: #5a6268;
-#         }
-#         .pages-grid {
-#             display: grid;
-#             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-#             gap: 20px;
-#             margin-top: 20px;
-#         }
-#         .page-card {
-#             background: #f8f9fa;
-#             padding: 20px;
-#             border-radius: 8px;
-#             border: 2px solid #e9ecef;
-#             cursor: pointer;
-#             transition: all 0.3s ease;
-#         }
-#         .page-card:hover {
-#             border-color: #007bff;
-#             transform: translateY(-2px);
-#             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-#         }
-#         .page-card.selected {
-#             border-color: #007bff;
-#             background: #e7f3ff;
-#         }
-#         .page-title {
-#             font-weight: bold;
-#             color: #333;
-#             margin-bottom: 8px;
-#             font-size: 16px;
-#         }
-#         .page-url {
-#             color: #007bff;
-#             font-size: 14px;
-#             margin-bottom: 8px;
-#             word-break: break-all;
-#         }
-#         .page-description {
-#             color: #666;
-#             font-size: 13px;
-#             margin-bottom: 10px;
-#             line-height: 1.4;
-#         }
-#         .page-stats {
-#             display: flex;
-#             justify-content: space-between;
-#             font-size: 12px;
-#             color: #888;
-#         }
-#         .results {
-#             margin-top: 30px;
-#         }
-#         .screenshot {
-#             text-align: center;
-#             margin-bottom: 20px;
-#         }
-#         .screenshot img {
-#             max-width: 100%;
-#             border: 2px solid #ddd;
-#             border-radius: 5px;
-#         }
-#         .components, .complexity {
-#             background: #f8f9fa;
-#             padding: 20px;
-#             border-radius: 5px;
-#             margin-bottom: 20px;
-#         }
-#         .components h3, .complexity h3 {
-#             margin-top: 0;
-#             color: #333;
-#         }
-#         .component-list {
-#             display: grid;
-#             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-#             gap: 10px;
-#         }
-#         .component-item {
-#             background: white;
-#             padding: 10px;
-#             border-radius: 3px;
-#             border-left: 3px solid #007bff;
-#         }
-#         .complexity-score {
-#             font-size: 24px;
-#             font-weight: bold;
-#             color: #007bff;
-#         }
-#         .loading {
-#             text-align: center;
-#             color: #666;
-#         }
-#         .error {
-#             color: #dc3545;
-#             background: #f8d7da;
-#             padding: 10px;
-#             border-radius: 5px;
-#             margin-top: 10px;
-#         }
-#         .section {
-#             margin-bottom: 30px;
-#         }
-#         .section-title {
-#             font-size: 20px;
-#             font-weight: bold;
-#             color: #333;
-#             margin-bottom: 15px;
-#             padding-bottom: 10px;
-#             border-bottom: 2px solid #e9ecef;
-#         }
-#         .analyze-selected {
-#             background-color: #28a745;
-#             margin-top: 20px;
-#         }
-#         .analyze-selected:hover {
-#             background-color: #218838;
-#         }
-#         .page-count {
-#             color: #666;
-#             font-size: 14px;
-#             margin-top: 10px;
-#         }
-#     </style>
-# </head>
-# <body>
-#     <div class="container">
-#         <h1>🔍 Enhanced Website Component Analyzer</h1>
+    html_template = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Component Analyzer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="url"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type="number"] {
+            width: 200px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 10px 5px 0;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .page-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .page-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .page-card.selected {
+            border-color: #007bff;
+            background: #e7f3ff;
+        }
+        .page-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .page-url {
+            color: #007bff;
+            font-size: 14px;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        .page-description {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .page-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .screenshot {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .screenshot img {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .components, .complexity {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .components h3, .complexity h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .component-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .component-item {
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            border-left: 3px solid #007bff;
+        }
+        .complexity-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .analyze-selected {
+            background-color: #28a745;
+            margin-top: 20px;
+        }
+        .analyze-selected:hover {
+            background-color: #218838;
+        }
+        .page-count {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Enhanced Website Component Analyzer</h1>
         
-#         <div class="section">
-#             <div class="input-group">
-#                 <label for="url">Website URL:</label>
-#                 <input type="url" id="url" placeholder="https://example.com" required>
-#             </div>
-#             <div class="input-group">
-#                 <label for="maxPages">Maximum pages to discover:</label>
-#                 <input type="number" id="maxPages" value="20" min="5" max="100">
-#             </div>
-#             <button onclick="discoverPages()" id="discoverBtn">🔍 Discover Pages</button>
-#         </div>
+        <div class="section">
+            <div class="input-group">
+                <label for="url">Website URL:</label>
+                <input type="url" id="url" placeholder="https://example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="maxPages">Maximum pages to discover:</label>
+                <input type="number" id="maxPages" value="20" min="5" max="100">
+            </div>
+            <button onclick="discoverPages()" id="discoverBtn">🔍 Discover Pages</button>
+        </div>
         
-#         <div id="pagesSection" class="section" style="display: none;">
-#             <div class="section-title">
-#                 Available Pages
-#                 <span id="pageCount" class="page-count"></span>
-#             </div>
-#             <div id="pagesGrid" class="pages-grid"></div>
-#             <button onclick="analyzeSelected()" id="analyzeSelectedBtn" class="analyze-selected" style="display: none;">
-#                 📊 Analyze Selected Page
-#             </button>
-#         </div>
+        <div id="pagesSection" class="section" style="display: none;">
+            <div class="section-title">
+                Available Pages
+                <span id="pageCount" class="page-count"></span>
+            </div>
+            <div id="pagesGrid" class="pages-grid"></div>
+            <button onclick="analyzeSelected()" id="analyzeSelectedBtn" class="analyze-selected" style="display: none;">
+                📊 Analyze Selected Page
+            </button>
+        </div>
         
-#         <div id="results" class="results" style="display: none;">
-#             <div class="section-title">Analysis Results</div>
-#             <div class="screenshot" id="screenshot"></div>
+        <div id="results" class="results" style="display: none;">
+            <div class="section-title">Analysis Results</div>
+            <div class="screenshot" id="screenshot"></div>
             
-#             <div class="complexity" id="complexity"></div>
+            <div class="complexity" id="complexity"></div>
             
-#             <div class="components" id="components">
-#                 <h3>Page Components</h3>
-#                 <div class="component-list" id="componentList"></div>
-#             </div>
-#         </div>
+            <div class="components" id="components">
+                <h3>Page Components</h3>
+                <div class="component-list" id="componentList"></div>
+            </div>
+        </div>
         
-#         <div id="loading" class="loading" style="display: none;">
-#             <p>🔄 Processing... This may take a few moments.</p>
-#         </div>
+        <div id="loading" class="loading" style="display: none;">
+            <p>🔄 Processing... This may take a few moments.</p>
+        </div>
         
-#         <div id="error" class="error" style="display: none;"></div>
-#     </div>
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
 
-#     <script>
-#         let discoveredPages = [];
-#         let selectedPageUrl = null;
+    <script>
+        let discoveredPages = [];
+        let selectedPageUrl = null;
         
-#         async function discoverPages() {
-#             const url = document.getElementById('url').value.trim();
-#             const maxPages = parseInt(document.getElementById('maxPages').value) || 20;
-#             const discoverBtn = document.getElementById('discoverBtn');
-#             const loading = document.getElementById('loading');
-#             const error = document.getElementById('error');
-#             const pagesSection = document.getElementById('pagesSection');
+        async function discoverPages() {
+            const url = document.getElementById('url').value.trim();
+            const maxPages = parseInt(document.getElementById('maxPages').value) || 20;
+            const discoverBtn = document.getElementById('discoverBtn');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const pagesSection = document.getElementById('pagesSection');
             
-#             if (!url) {
-#                 alert('Please enter a valid URL');
-#                 return;
-#             }
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
             
-#             // Show loading, hide other sections
-#             loading.style.display = 'block';
-#             loading.innerHTML = '<p>🔄 Discovering pages... This may take a few moments.</p>';
-#             pagesSection.style.display = 'none';
-#             document.getElementById('results').style.display = 'none';
-#             error.style.display = 'none';
-#             discoverBtn.disabled = true;
-#             discoverBtn.textContent = '🔍 Discovering...';
+            // Show loading, hide other sections
+            loading.style.display = 'block';
+            loading.innerHTML = '<p>🔄 Discovering pages... This may take a few moments.</p>';
+            pagesSection.style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            error.style.display = 'none';
+            discoverBtn.disabled = true;
+            discoverBtn.textContent = '🔍 Discovering...';
             
-#             try {
-#                 const response = await fetch('/discover', {
-#                     method: 'POST',
-#                     headers: {
-#                         'Content-Type': 'application/json',
-#                     },
-#                     body: JSON.stringify({ 
-#                         url: url,
-#                         max_pages: maxPages
-#                     })
-#                 });
+            try {
+                const response = await fetch('/discover', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        url: url,
+                        max_pages: maxPages
+                    })
+                });
                 
-#                 const data = await response.json();
+                const data = await response.json();
                 
-#                 if (response.ok) {
-#                     discoveredPages = data.pages;
-#                     displayPages(data.pages);
-#                     pagesSection.style.display = 'block';
-#                 } else {
-#                     throw new Error(data.error || 'Discovery failed');
-#                 }
+                if (response.ok) {
+                    discoveredPages = data.pages;
+                    displayPages(data.pages);
+                    pagesSection.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Discovery failed');
+                }
                 
-#             } catch (err) {
-#                 error.textContent = err.message;
-#                 error.style.display = 'block';
-#             } finally {
-#                 loading.style.display = 'none';
-#                 discoverBtn.disabled = false;
-#                 discoverBtn.textContent = '🔍 Discover Pages';
-#             }
-#         }
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                discoverBtn.disabled = false;
+                discoverBtn.textContent = '🔍 Discover Pages';
+            }
+        }
         
-#         function displayPages(pages) {
-#             const pagesGrid = document.getElementById('pagesGrid');
-#             const pageCount = document.getElementById('pageCount');
+        function displayPages(pages) {
+            const pagesGrid = document.getElementById('pagesGrid');
+            const pageCount = document.getElementById('pageCount');
             
-#             pageCount.textContent = `(${pages.length} pages found)`;
-#             pagesGrid.innerHTML = '';
+            pageCount.textContent = `(${pages.length} pages found)`;
+            pagesGrid.innerHTML = '';
             
-#             pages.forEach((page, index) => {
-#                 const pageCard = document.createElement('div');
-#                 pageCard.className = 'page-card';
-#                 pageCard.onclick = () => selectPage(page.url, pageCard);
+            pages.forEach((page, index) => {
+                const pageCard = document.createElement('div');
+                pageCard.className = 'page-card';
+                pageCard.onclick = () => selectPage(page.url, pageCard);
                 
-#                 pageCard.innerHTML = `
-#                     <div class="page-title">${page.title}</div>
-#                     <div class="page-url">${page.url}</div>
-#                     <div class="page-description">${page.description}</div>
-#                     <div class="page-stats">
-#                         <span>Path: ${page.path}</span>
-#                         <span>Elements: ${page.element_count}</span>
-#                     </div>
-#                 `;
+                pageCard.innerHTML = `
+                    <div class="page-title">${page.title}</div>
+                    <div class="page-url">${page.url}</div>
+                    <div class="page-description">${page.description}</div>
+                    <div class="page-stats">
+                        <span>Path: ${page.path}</span>
+                        <span>Elements: ${page.element_count}</span>
+                    </div>
+                `;
                 
-#                 pagesGrid.appendChild(pageCard);
-#             });
+                pagesGrid.appendChild(pageCard);
+            });
             
-#             // Auto-select first page
-#             if (pages.length > 0) {
-#                 setTimeout(() => {
-#                     pagesGrid.firstChild.click();
-#                 }, 100);
-#             }
-#         }
+            // Auto-select first page
+            if (pages.length > 0) {
+                setTimeout(() => {
+                    pagesGrid.firstChild.click();
+                }, 100);
+            }
+        }
         
-#         function selectPage(url, cardElement) {
-#             // Remove previous selection
-#             document.querySelectorAll('.page-card').forEach(card => {
-#                 card.classList.remove('selected');
-#             });
+        function selectPage(url, cardElement) {
+            // Remove previous selection
+            document.querySelectorAll('.page-card').forEach(card => {
+                card.classList.remove('selected');
+            });
             
-#             // Select current card
-#             cardElement.classList.add('selected');
-#             selectedPageUrl = url;
+            // Select current card
+            cardElement.classList.add('selected');
+            selectedPageUrl = url;
             
-#             // Show analyze button
-#             document.getElementById('analyzeSelectedBtn').style.display = 'block';
+            // Show analyze button
+            document.getElementById('analyzeSelectedBtn').style.display = 'block';
             
-#             // Hide previous results
-#             document.getElementById('results').style.display = 'none';
-#         }
+            // Hide previous results
+            document.getElementById('results').style.display = 'none';
+        }
         
-#         async function analyzeSelected() {
-#             if (!selectedPageUrl) {
-#                 alert('Please select a page to analyze');
-#                 return;
-#             }
+        async function analyzeSelected() {
+            if (!selectedPageUrl) {
+                alert('Please select a page to analyze');
+                return;
+            }
             
-#             const analyzeBtn = document.getElementById('analyzeSelectedBtn');
-#             const loading = document.getElementById('loading');
-#             const error = document.getElementById('error');
-#             const results = document.getElementById('results');
+            const analyzeBtn = document.getElementById('analyzeSelectedBtn');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
             
-#             // Show loading
-#             loading.style.display = 'block';
-#             loading.innerHTML = '<p>🔄 Analyzing selected page... This may take a few moments.</p>';
-#             results.style.display = 'none';
-#             error.style.display = 'none';
-#             analyzeBtn.disabled = true;
-#             analyzeBtn.textContent = '📊 Analyzing...';
+            // Show loading
+            loading.style.display = 'block';
+            loading.innerHTML = '<p>🔄 Analyzing selected page... This may take a few moments.</p>';
+            results.style.display = 'none';
+            error.style.display = 'none';
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '📊 Analyzing...';
             
-#             try {
-#                 const response = await fetch('/analyze', {
-#                     method: 'POST',
-#                     headers: {
-#                         'Content-Type': 'application/json',
-#                     },
-#                     body: JSON.stringify({ url: selectedPageUrl })
-#                 });
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: selectedPageUrl })
+                });
                 
-#                 const data = await response.json();
+                const data = await response.json();
                 
-#                 if (response.ok) {
-#                     displayResults(data);
-#                 } else {
-#                     throw new Error(data.error || 'Analysis failed');
-#                 }
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
                 
-#             } catch (err) {
-#                 error.textContent = err.message;
-#                 error.style.display = 'block';
-#             } finally {
-#                 loading.style.display = 'none';
-#                 analyzeBtn.disabled = false;
-#                 analyzeBtn.textContent = '📊 Analyze Selected Page';
-#             }
-#         }
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '📊 Analyze Selected Page';
+            }
+        }
         
-#         function displayResults(data) {
-#             const results = document.getElementById('results');
-#             const screenshot = document.getElementById('screenshot');
-#             const complexity = document.getElementById('complexity');
-#             const componentList = document.getElementById('componentList');
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            const screenshot = document.getElementById('screenshot');
+            const complexity = document.getElementById('complexity');
+            const componentList = document.getElementById('componentList');
             
-#             // Display screenshot
-#             if (data.screenshot) {
-#                 screenshot.innerHTML = `
-#                     <h3>Website Screenshot</h3>
-#                     <p><strong>URL:</strong> ${data.url}</p>
-#                     <img src="data:image/png;base64,${data.screenshot}" alt="Website Screenshot">
-#                 `;
-#             } else {
-#                 screenshot.innerHTML = `
-#                     <h3>Website Screenshot</h3>
-#                     <p><strong>URL:</strong> ${data.url}</p>
-#                     <p>Screenshot not available</p>
-#                 `;
-#             }
+            // Display screenshot
+            if (data.screenshot) {
+                screenshot.innerHTML = `
+                    <h3>Website Screenshot</h3>
+                    <p><strong>URL:</strong> ${data.url}</p>
+                    <img src="data:image/png;base64,${data.screenshot}" alt="Website Screenshot">
+                `;
+            } else {
+                screenshot.innerHTML = `
+                    <h3>Website Screenshot</h3>
+                    <p><strong>URL:</strong> ${data.url}</p>
+                    <p>Screenshot not available</p>
+                `;
+            }
             
-#             // Display complexity
-#             complexity.innerHTML = `
-#                 <h3>Page Complexity Analysis</h3>
-#                 <div class="complexity-score">
-#                     Score: ${data.complexity.complexity_score} (${data.complexity.complexity_level})
-#                 </div>
-#                 <p>Total Elements: ${data.complexity.total_elements}</p>
-#             `;
+            // Display complexity
+            complexity.innerHTML = `
+                <h3>Page Complexity Analysis</h3>
+                <div class="complexity-score">
+                    Score: ${data.complexity.complexity_score} (${data.complexity.complexity_level})
+                </div>
+                <p>Total Elements: ${data.complexity.total_elements}</p>
+            `;
             
-#             // Display components
-#             componentList.innerHTML = '';
-#             const sortedComponents = Object.entries(data.components).sort((a, b) => b[1] - a[1]);
+            // Display components
+            componentList.innerHTML = '';
+            const sortedComponents = Object.entries(data.components).sort((a, b) => b[1] - a[1]);
             
-#             sortedComponents.forEach(([component, count]) => {
-#                 const item = document.createElement('div');
-#                 item.className = 'component-item';
-#                 item.innerHTML = `
-#                     <strong>${component}</strong><br>
-#                     Count: ${count}
-#                 `;
-#                 componentList.appendChild(item);
-#             });
+            sortedComponents.forEach(([component, count]) => {
+                const item = document.createElement('div');
+                item.className = 'component-item';
+                item.innerHTML = `
+                    <strong>${component}</strong><br>
+                    Count: ${count}
+                `;
+                componentList.appendChild(item);
+            });
             
-#             results.style.display = 'block';
+            results.style.display = 'block';
             
-#             // Scroll to results
-#             results.scrollIntoView({ behavior: 'smooth' });
-#         }
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
         
-#         // Allow Enter key to trigger discovery
-#         document.getElementById('url').addEventListener('keypress', function(e) {
-#             if (e.key === 'Enter') {
-#                 discoverPages();
-#             }
-#         });
+        // Allow Enter key to trigger discovery
+        document.getElementById('url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                discoverPages();
+            }
+        });
         
-#         // Quick analyze function for backwards compatibility
-#         async function analyzeWebsite() {
-#             const url = document.getElementById('url').value.trim();
-#             if (!url) {
-#                 alert('Please enter a valid URL');
-#                 return;
-#             }
+        // Quick analyze function for backwards compatibility
+        async function analyzeWebsite() {
+            const url = document.getElementById('url').value.trim();
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
             
-#             selectedPageUrl = url.startsWith('http') ? url : 'https://' + url;
-#             await analyzeSelected();
-#         }
-#     </script>
-# </body>
-# </html>'''
+            selectedPageUrl = url.startsWith('http') ? url : 'https://' + url;
+            await analyzeSelected();
+        }
+    </script>
+</body>
+</html>'''
     
-#     # Write the HTML template file
-#     with open('templates/index.html', 'w', encoding='utf-8') as f:
-#         f.write(html_template)
+    # Write the HTML template file
+    with open('templates/index.html', 'w', encoding='utf-8') as f:
+        f.write(html_template)
     
     print("Enhanced Website Component Analyzer")
     print("=" * 40)
