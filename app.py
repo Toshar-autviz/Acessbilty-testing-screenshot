@@ -570,6 +570,8 @@ class WebsiteAnalyzer:
     def setup_driver(self):
         """Setup Chrome WebDriver with options for Ubuntu"""
         chrome_options = Options()
+        chrome_options.binary_location = "/usr/bin/google-chrome"  # 👈 Add this line
+
         
         # Essential options for headless mode in Ubuntu
         chrome_options.add_argument("--headless")
