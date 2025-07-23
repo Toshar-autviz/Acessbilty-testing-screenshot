@@ -16,6 +16,7 @@ from urllib.robotparser import RobotFileParser
 import re
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+import tempfile
 
 class WebsiteAnalyzer:
     def __init__(self):
@@ -31,6 +32,8 @@ class WebsiteAnalyzer:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--window-size=1920,1080")
+        user_data_dir = tempfile.mkdtemp()
+        chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
         
         try:
             self.driver = webdriver.Chrome(options=chrome_options)
