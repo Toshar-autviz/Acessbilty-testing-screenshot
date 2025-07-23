@@ -33,8 +33,7 @@ class WebsiteAnalyzer:
         chrome_options.add_argument("--window-size=1920,1080")
         
         try:
-            # self.driver = webdriver.Chrome(options=chrome_options)
-            self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_BIN"), options=chrome_options)
+            self.driver = webdriver.Chrome(options=chrome_options)
         except Exception as e:
             print(f"Error setting up Chrome driver: {e}")
             print("Make sure ChromeDriver is installed and in your PATH")
