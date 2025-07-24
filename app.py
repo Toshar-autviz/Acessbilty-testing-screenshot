@@ -536,6 +536,7 @@
 #     app.run(debug=True, port=5000,host='0.0.0.0')
 
 
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -543,7 +544,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import WebDriverException, TimeoutException, SessionNotCreatedException
 import time
 import base64
 from urllib.parse import urljoin, urlparse, parse_qs
@@ -563,17 +563,16 @@ class WebsiteAnalyzer:
     def __init__(self):
         self.driver = None
         self.user_data_dir = None
-        self.driver_initialized = False
         self.setup_driver()
         self.discovered_pages = []
         self.base_domain = None
-        self.max_retries = 3
     
     def setup_driver(self):
-        """Setup Chrome WebDriver with enhanced options for Ubuntu"""
+        """Setup Chrome WebDriver with options for Ubuntu"""
         chrome_options = Options()
-        chrome_options.binary_location = "/usr/bin/google-chrome"
+        chrome_options.binary_location = "/usr/bin/google-chrome"  # 👈 Add this line
 
+        
         # Essential options for headless mode in Ubuntu
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
@@ -581,92 +580,41 @@ class WebsiteAnalyzer:
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-plugins")
-        chrome_options.add_argument("--disable-images")
+        chrome_options.add_argument("--disable-images")  # Speed up loading
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--remote-debugging-port=9222")
-        
-        # Enhanced stability options
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        chrome_options.add_argument("--disable-renderer-backgrounding")
-        chrome_options.add_argument("--disable-features=TranslateUI")
-        chrome_options.add_argument("--disable-ipc-flooding-protection")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--memory-pressure-off")
-        chrome_options.add_argument("--max_old_space_size=4096")
-        chrome_options.add_argument("--no-first-run")
-        chrome_options.add_argument("--no-default-browser-check")
-        chrome_options.add_argument("--disable-logging")
-        chrome_options.add_argument("--disable-gpu-logging")
-        chrome_options.add_argument("--silent")
         
         # Create a unique temporary directory for user data
         self.user_data_dir = tempfile.mkdtemp(prefix="chrome_user_data_")
         chrome_options.add_argument(f'--user-data-dir={self.user_data_dir}')
         
+        # Additional stability options for Ubuntu
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-features=TranslateUI")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        chrome_options.add_argument("--single-process")  # Sometimes helps with permission issues
+        
         # Set up cleanup on exit
         atexit.register(self.cleanup_temp_dirs)
         
         try:
+            # Try to use system chrome first
             self.driver = webdriver.Chrome(options=chrome_options)
-            self.driver.set_page_load_timeout(30)
-            self.driver.implicitly_wait(10)
-            self.driver_initialized = True
             print("Chrome WebDriver initialized successfully")
         except Exception as e:
             print(f"Error setting up Chrome driver: {e}")
-            print("Will use requests-only mode for web scraping")
-            self.driver_initialized = False
+            print("\nTroubleshooting steps for Ubuntu:")
+            print("1. Install Chrome: wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -")
+            print("2. Add repository: echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list")
+            print("3. Update and install: sudo apt update && sudo apt install google-chrome-stable")
+            print("4. Install ChromeDriver: sudo apt install chromium-chromedriver")
+            print("5. Check Chrome version: google-chrome --version")
+            print("6. Check ChromeDriver version: chromedriver --version")
+            
+            # Cleanup temp directory if driver creation failed
             self.cleanup_temp_dirs()
-    
-    def reinitialize_driver(self):
-        """Reinitialize the driver if it becomes invalid"""
-        print("Reinitializing WebDriver...")
-        try:
-            if self.driver:
-                self.driver.quit()
-        except:
-            pass
-        
-        self.cleanup_temp_dirs()
-        self.setup_driver()
-        return self.driver_initialized
-    
-    def is_driver_alive(self):
-        """Check if the driver is still alive and responsive"""
-        if not self.driver or not self.driver_initialized:
-            return False
-        
-        try:
-            # Try to get current URL to test connection
-            self.driver.current_url
-            return True
-        except WebDriverException:
-            return False
-    
-    def safe_driver_get(self, url, retries=3):
-        """Safely get a page with retries and driver recovery"""
-        for attempt in range(retries):
-            try:
-                if not self.is_driver_alive():
-                    if not self.reinitialize_driver():
-                        return None
-                
-                self.driver.get(url)
-                time.sleep(2)
-                return self.driver.page_source
-                
-            except (WebDriverException, TimeoutException) as e:
-                print(f"Driver error on attempt {attempt + 1}: {e}")
-                if attempt < retries - 1:
-                    time.sleep(2)
-                    continue
-                else:
-                    print("Max retries reached, falling back to requests")
-                    return None
-        
-        return None
     
     def cleanup_temp_dirs(self):
         """Clean up temporary directories"""
@@ -721,23 +669,19 @@ class WebsiteAnalyzer:
         sitemap_urls = [
             urljoin(base_url, '/sitemap.xml'),
             urljoin(base_url, '/sitemap_index.xml'),
-            urljoin(base_url, '/robots.txt')
+            urljoin(base_url, '/robots.txt')  # Check robots.txt for sitemap location
         ]
         
         for sitemap_url in sitemap_urls:
             try:
-                response = requests.get(sitemap_url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                })
+                response = requests.get(sitemap_url, timeout=10)
                 if response.status_code == 200:
                     if 'sitemap' in sitemap_url.lower():
                         urls.update(self._parse_sitemap(response.text))
                     elif 'robots.txt' in sitemap_url:
                         sitemap_from_robots = self._get_sitemap_from_robots(response.text)
                         for sm_url in sitemap_from_robots:
-                            sm_response = requests.get(sm_url, timeout=10, headers={
-                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                            })
+                            sm_response = requests.get(sm_url, timeout=10)
                             if sm_response.status_code == 200:
                                 urls.update(self._parse_sitemap(sm_response.text))
             except Exception as e:
@@ -755,10 +699,9 @@ class WebsiteAnalyzer:
             for sitemap in root.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}sitemap'):
                 loc = sitemap.find('{http://www.sitemaps.org/schemas/sitemap/0.9}loc')
                 if loc is not None:
+                    # Fetch individual sitemap
                     try:
-                        response = requests.get(loc.text, timeout=10, headers={
-                            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                        })
+                        response = requests.get(loc.text, timeout=10)
                         if response.status_code == 200:
                             urls.update(self._parse_sitemap(response.text))
                     except:
@@ -789,54 +732,113 @@ class WebsiteAnalyzer:
                 sitemaps.append(sitemap_url)
         return sitemaps
     
+    # def _crawl_internal_links(self, base_url, max_depth=2):
+    #     """Crawl website for internal links"""
+    #     urls = set()
+    #     visited = set()
+    #     to_visit = [(base_url, 0)]
+        
+    #     while to_visit and len(urls) < 30:  # Limit crawling
+    #         current_url, depth = to_visit.pop(0)
+            
+    #         if current_url in visited or depth > max_depth:
+    #             continue
+                
+    #         visited.add(current_url)
+            
+    #         try:
+    #             if self.driver:
+    #                 self.driver.set_page_load_timeout(15)  # Set timeout
+    #                 self.driver.get(current_url)
+    #                 time.sleep(2)  # Increased wait time
+    #                 html_content = self.driver.page_source
+    #             else:
+    #                 response = requests.get(current_url, timeout=10, headers={
+    #                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+    #                 })
+    #                 html_content = response.text
+                
+    #             soup = BeautifulSoup(html_content, 'html.parser')
+                
+    #             # Find all links
+    #             for link in soup.find_all('a', href=True):
+    #                 href = link['href']
+    #                 full_url = urljoin(current_url, href)
+                    
+    #                 if self._is_valid_page_url(full_url):
+    #                     urls.add(full_url)
+    #                     if depth < max_depth:
+    #                         to_visit.append((full_url, depth + 1))
+                            
+    #         except Exception as e:
+    #             print(f"Error crawling {current_url}: {e}")
+        
+    #     return urls
+
     def _crawl_internal_links(self, base_url, max_depth=2):
-        """Crawl website for internal links with improved error handling"""
+        """Crawl website for internal links"""
         urls = set()
         visited = set()
         to_visit = [(base_url, 0)]
         
-        while to_visit and len(urls) < 30:
+        while to_visit and len(urls) < 30:  # Limit crawling
             current_url, depth = to_visit.pop(0)
             
             if current_url in visited or depth > max_depth:
                 continue
                 
             visited.add(current_url)
-            print(f"Crawling: {current_url} (depth: {depth})")
             
             try:
-                html_content = None
-                
-                # Try with Selenium first if available
-                if self.driver_initialized:
-                    html_content = self.safe_driver_get(current_url)
-                
-                # Fallback to requests if Selenium fails
-                if html_content is None:
-                    print(f"Using requests fallback for {current_url}")
-                    response = requests.get(current_url, timeout=15, headers={
-                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                    })
+                if self.driver:
+                    self.driver.get(current_url)
+                    time.sleep(1)
+                    html_content = self.driver.page_source
+                else:
+                    response = requests.get(current_url, timeout=10)
                     html_content = response.text
                 
-                if html_content:
-                    soup = BeautifulSoup(html_content, 'html.parser')
+                soup = BeautifulSoup(html_content, 'html.parser')
+                
+                # Find all links
+                for link in soup.find_all('a', href=True):
+                    href = link['href']
+                    full_url = urljoin(current_url, href)
                     
-                    # Find all links
-                    for link in soup.find_all('a', href=True):
-                        href = link['href']
-                        full_url = urljoin(current_url, href)
-                        
-                        if self._is_valid_page_url(full_url):
-                            urls.add(full_url)
-                            if depth < max_depth and len(to_visit) < 20:  # Limit queue size
-                                to_visit.append((full_url, depth + 1))
+                    if self._is_valid_page_url(full_url):
+                        urls.add(full_url)
+                        if depth < max_depth:
+                            to_visit.append((full_url, depth + 1))
                             
             except Exception as e:
                 print(f"Error crawling {current_url}: {e}")
-                continue
         
         return urls
+
+    
+    # def _check_common_pages(self, base_url):
+    #     """Check for common page patterns"""
+    #     common_paths = [
+    #         '', '/', '/home', '/about', '/about-us', '/contact', '/contact-us',
+    #         '/services', '/products', '/blog', '/news', '/faq', '/help',
+    #         '/privacy', '/terms', '/careers', '/team', '/portfolio',
+    #         '/gallery', '/testimonials', '/pricing', '/login', '/register'
+    #     ]
+        
+    #     urls = set()
+    #     for path in common_paths:
+    #         test_url = urljoin(base_url, path)
+    #         try:
+    #             response = requests.head(test_url, timeout=5, headers={
+    #                 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+    #             })
+    #             if response.status_code == 200:
+    #                 urls.add(test_url)
+    #         except:
+    #             pass
+        
+    #     return urls
+
     
     def _check_common_pages(self, base_url):
         """Check for common page patterns"""
@@ -851,9 +853,7 @@ class WebsiteAnalyzer:
         for path in common_paths:
             test_url = urljoin(base_url, path)
             try:
-                response = requests.head(test_url, timeout=5, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+                response = requests.head(test_url, timeout=5)
                 if response.status_code == 200:
                     urls.add(test_url)
             except:
@@ -876,7 +876,7 @@ class WebsiteAnalyzer:
             return False
         
         # Skip certain file types
-        skip_extensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.css', '.js', '.xml', '.zip', '.doc', '.docx']
+        skip_extensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.css', '.js', '.xml', '.zip']
         if any(parsed.path.lower().endswith(ext) for ext in skip_extensions):
             return False
         
@@ -884,36 +884,22 @@ class WebsiteAnalyzer:
         if parsed.fragment:
             return False
         
-        # Skip common non-page URLs
-        skip_patterns = ['mailto:', 'tel:', 'javascript:', '#']
-        if any(url.lower().startswith(pattern) for pattern in skip_patterns):
-            return False
-        
         return True
     
     def _get_page_info(self, url):
-        """Get basic information about a page with better error handling"""
+        """Get basic information about a page"""
         try:
-            html_content = None
-            title = 'Untitled'
-            
-            # Try with Selenium first if available
-            if self.driver_initialized:
-                html_content = self.safe_driver_get(url)
-                if html_content and self.driver:
-                    try:
-                        title = self.driver.title
-                    except:
-                        pass
-            
-            # Fallback to requests
-            if html_content is None:
-                response = requests.get(url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
-                html_content = response.text
-                soup = BeautifulSoup(html_content, 'html.parser')
+            if self.driver:
+                self.driver.set_page_load_timeout(15)
+                self.driver.get(url)
+                time.sleep(2)
+                title = self.driver.title
+                html_content = self.driver.page_source
+            else:
+                response = requests.get(url, timeout=10)
+                soup = BeautifulSoup(response.text, 'html.parser')
                 title = soup.title.string if soup.title else 'Untitled'
+                html_content = response.text
             
             # Get page description
             soup = BeautifulSoup(html_content, 'html.parser')
@@ -942,31 +928,26 @@ class WebsiteAnalyzer:
             }
     
     def take_screenshot(self, url):
-        """Take screenshot of the webpage with better error handling"""
-        if not self.driver_initialized:
+        """Take screenshot of the webpage"""
+        if not self.driver:
             print("Driver not available, skipping screenshot")
             return None
             
         try:
-            html_content = self.safe_driver_get(url)
-            if html_content is None or not self.is_driver_alive():
-                print("Unable to get page content for screenshot")
-                return None
-            
-            # Wait for page to load completely
-            time.sleep(3)
+            self.driver.set_page_load_timeout(20)
+            self.driver.get(url)
+            time.sleep(5)  # Wait for page to load completely
             
             # Scroll to ensure full page load
-            try:
-                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(1)
-                self.driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(2)
-            except:
-                pass
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
+            self.driver.execute_script("window.scrollTo(0, 0);")
+            time.sleep(2)
             
             # Take screenshot
             screenshot = self.driver.get_screenshot_as_png()
+            
+            # Convert to base64 for web display
             screenshot_b64 = base64.b64encode(screenshot).decode('utf-8')
             return screenshot_b64
             
@@ -975,19 +956,19 @@ class WebsiteAnalyzer:
             return None
     
     def extract_components(self, url):
-        """Extract and analyze HTML components with better error handling"""
+        """Extract and analyze HTML components"""
         try:
-            html_content = None
-            
-            # Try with Selenium first if available
-            if self.driver_initialized:
-                html_content = self.safe_driver_get(url)
-            
-            # Fallback to requests
-            if html_content is None:
-                response = requests.get(url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
+            # Get page source
+            if self.driver:
+                self.driver.set_page_load_timeout(15)
+                self.driver.get(url)
+                time.sleep(3)
+                html_content = self.driver.page_source
+            else:
+                # response = requests.get(url, timeout=10, headers={
+                #     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                # })
+                response = requests.get(url, timeout=10)
                 html_content = response.text
             
             soup = BeautifulSoup(html_content, 'html.parser')
@@ -1133,7 +1114,7 @@ class WebsiteAnalyzer:
         
         try:
             # Take screenshot (only if driver is available)
-            if self.driver_initialized:
+            if self.driver:
                 print("Taking screenshot...")
                 result['screenshot'] = self.take_screenshot(url)
             else:
@@ -1212,15 +1193,19 @@ if __name__ == '__main__':
     if not os.path.exists('templates'):
         os.makedirs('templates')
         
-    print("Enhanced Website Component Analyzer - Fixed Version")
+    print("Enhanced Website Component Analyzer - Ubuntu Fixed Version")
     print("=" * 50)
     print("FIXES APPLIED:")
-    print("✅ Enhanced WebDriver session management")
-    print("✅ Automatic driver recovery and retry logic")
-    print("✅ Improved fallback to requests when Selenium fails")
-    print("✅ Better error handling and connection testing")
-    print("✅ Memory optimization and stability improvements")
+    print("✅ Proper temp directory management")
+    print("✅ Chrome options optimized for Ubuntu")
+    print("✅ Better error handling and cleanup")
+    print("✅ Fallback to requests when driver fails")
+    print("✅ Increased timeouts for stability")
     print("\nStarting Flask application...")
     print("Open http://localhost:5000 in your browser")
+    print("\nUbuntu setup commands:")
+    print("sudo apt update")
+    print("sudo apt install -y google-chrome-stable chromium-chromedriver")
+    print("pip install flask selenium beautifulsoup4 requests lxml")
     
     app.run(debug=True, port=5000, host='0.0.0.0')
