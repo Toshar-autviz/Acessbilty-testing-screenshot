@@ -580,6 +580,7 @@ class WebsiteAnalyzer:
         # self.driver.implicitly_wait(10)
         service = Service(executable_path=os.getenv("CHROMEDRIVER_BIN", "/usr/bin/chromedriver"))
         self.driver = webdriver.Chrome(service=service, options=options)
+        print("done")
 
     
     
@@ -1173,6 +1174,7 @@ def index():
 
 @app.route('/discover', methods=['POST'])
 def discover():
+    print("hello there")
     url = request.json.get('url', '').strip()
     max_pages = request.json.get('max_pages', 20)
     
@@ -1182,10 +1184,12 @@ def discover():
     analyzer = WebsiteAnalyzer()
     try:
         pages = analyzer.discover_pages(url, max_pages)
+
         return jsonify({'pages': pages})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        print("herer")
         analyzer.close()
 
 @app.route('/analyze', methods=['POST'])
