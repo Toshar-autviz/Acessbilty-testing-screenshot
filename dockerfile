@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Install minimal dependencies for Chromium and Selenium
+# Install minimal dependencies
 RUN apt-get update && apt-get install -y \
     chromium-driver \
     chromium \

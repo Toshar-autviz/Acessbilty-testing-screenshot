@@ -564,55 +564,73 @@ class WebsiteAnalyzer:
         self.setup_driver()
         self.discovered_pages = []
         self.base_domain = None
-    
+
+
     def setup_driver(self):
-        """Setup Chrome WebDriver with options for Ubuntu"""
-        chrome_options = Options()
-        chrome_options.binary_location = "/usr/bin/google-chrome"  # 👈 Add this line
+        """Setup Chrome driver with accessibility-focused options"""
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--force-device-scale-factor=1')
+        
+        # self.driver = webdriver.Chrome(options=options)
+        # self.driver.implicitly_wait(10)
+        service = Service(executable_path=os.getenv("CHROMEDRIVER_BIN", "/usr/bin/chromedriver"))
+        self.driver = webdriver.Chrome(service=service, options=options)
+
+    
+    
+    # def setup_driver(self):
+    #     """Setup Chrome WebDriver with options for Ubuntu"""
+    #     chrome_options = Options()
+    #     chrome_options.binary_location = "/usr/bin/google-chrome"  # 👈 Add this line
 
         
-        # Essential options for headless mode in Ubuntu
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-plugins")
-        chrome_options.add_argument("--disable-images")  # Speed up loading
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--remote-debugging-port=9222")
+    #     # Essential options for headless mode in Ubuntu
+    #     chrome_options.add_argument("--headless")
+    #     chrome_options.add_argument("--no-sandbox")
+    #     chrome_options.add_argument("--disable-dev-shm-usage")
+    #     chrome_options.add_argument("--disable-gpu")
+    #     chrome_options.add_argument("--disable-extensions")
+    #     chrome_options.add_argument("--disable-plugins")
+    #     chrome_options.add_argument("--disable-images")  # Speed up loading
+    #     chrome_options.add_argument("--window-size=1920,1080")
+    #     chrome_options.add_argument("--remote-debugging-port=9222")
         
-        # Create a unique temporary directory for user data
-        self.user_data_dir = tempfile.mkdtemp(prefix="chrome_user_data_")
-        chrome_options.add_argument(f'--user-data-dir={self.user_data_dir}')
+    #     # Create a unique temporary directory for user data
+    #     self.user_data_dir = tempfile.mkdtemp(prefix="chrome_user_data_")
+    #     chrome_options.add_argument(f'--user-data-dir={self.user_data_dir}')
         
-        # Additional stability options for Ubuntu
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        chrome_options.add_argument("--disable-renderer-backgrounding")
-        chrome_options.add_argument("--disable-features=TranslateUI")
-        chrome_options.add_argument("--disable-ipc-flooding-protection")
-        chrome_options.add_argument("--single-process")  # Sometimes helps with permission issues
+    #     # Additional stability options for Ubuntu
+    #     chrome_options.add_argument("--disable-background-timer-throttling")
+    #     chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+    #     chrome_options.add_argument("--disable-renderer-backgrounding")
+    #     chrome_options.add_argument("--disable-features=TranslateUI")
+    #     chrome_options.add_argument("--disable-ipc-flooding-protection")
+    #     chrome_options.add_argument("--single-process")  # Sometimes helps with permission issues
         
-        # Set up cleanup on exit
-        atexit.register(self.cleanup_temp_dirs)
+    #     # Set up cleanup on exit
+    #     atexit.register(self.cleanup_temp_dirs)
         
-        try:
-            # Try to use system chrome first
-            self.driver = webdriver.Chrome(options=chrome_options)
-            print("Chrome WebDriver initialized successfully")
-        except Exception as e:
-            print(f"Error setting up Chrome driver: {e}")
-            print("\nTroubleshooting steps for Ubuntu:")
-            print("1. Install Chrome: wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -")
-            print("2. Add repository: echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list")
-            print("3. Update and install: sudo apt update && sudo apt install google-chrome-stable")
-            print("4. Install ChromeDriver: sudo apt install chromium-chromedriver")
-            print("5. Check Chrome version: google-chrome --version")
-            print("6. Check ChromeDriver version: chromedriver --version")
+    #     try:
+    #         # Try to use system chrome first
+    #         self.driver = webdriver.Chrome(options=chrome_options)
+    #         print("Chrome WebDriver initialized successfully")
+    #     except Exception as e:
+    #         print(f"Error setting up Chrome driver: {e}")
+    #         print("\nTroubleshooting steps for Ubuntu:")
+    #         print("1. Install Chrome: wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -")
+    #         print("2. Add repository: echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list")
+    #         print("3. Update and install: sudo apt update && sudo apt install google-chrome-stable")
+    #         print("4. Install ChromeDriver: sudo apt install chromium-chromedriver")
+    #         print("5. Check Chrome version: google-chrome --version")
+    #         print("6. Check ChromeDriver version: chromedriver --version")
             
-            # Cleanup temp directory if driver creation failed
-            self.cleanup_temp_dirs()
+    #         # Cleanup temp directory if driver creation failed
+    #         self.cleanup_temp_dirs()
     
     def cleanup_temp_dirs(self):
         """Clean up temporary directories"""
