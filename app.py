@@ -1250,6 +1250,7 @@ from urllib.robotparser import RobotFileParser
 import re
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+import undetected_chromedriver as uc
 
 class WebsiteAnalyzer:
     def __init__(self):
@@ -1272,24 +1273,40 @@ class WebsiteAnalyzer:
     #         print(f"Error setting up Chrome driver: {e}")
     #         print("Make sure ChromeDriver is installed and in your PATH")
 
+    # def setup_driver(self):
+    #     """Setup Chrome driver with accessibility-focused options"""
+    #     options = Options()
+    #     options.add_argument('--headless')
+    #     options.add_argument('--no-sandbox')
+    #     options.add_argument('--disable-dev-shm-usage')
+    #     # options.add_argument('--disable-gpu')
+    #     options.add_argument('--window-size=1920,1080')
+    #     # options.add_argument('--force-device-scale-factor=1')
+        
+    #     # self.driver = webdriver.Chrome(options=options)
+    #     # self.driver.implicitly_wait(10)
+    #     service = Service(executable_path=os.getenv("CHROMEDRIVER_BIN", "/usr/bin/chromedriver"))
+    #     try:
+    #         self.driver = webdriver.Chrome(service=service, options=options)
+    #     except Exception as e:
+    #         print(f"Error setting up Chrome driver: {e}")
+    #         print("Make sure ChromeDriver is installed and in your PATH")
+
     def setup_driver(self):
-        """Setup Chrome driver with accessibility-focused options"""
-        options = Options()
-        options.add_argument('--headless')
+        """Setup undetected Chrome driver with safe headless options"""
+        options = uc.ChromeOptions()
+        options.add_argument('--headless=new')  # Use `new` headless mode (more stable)
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920,1080')
-        # options.add_argument('--force-device-scale-factor=1')
-        
-        # self.driver = webdriver.Chrome(options=options)
-        # self.driver.implicitly_wait(10)
-        service = Service(executable_path=os.getenv("CHROMEDRIVER_BIN", "/usr/bin/chromedriver"))
+
         try:
-            self.driver = webdriver.Chrome(service=service, options=options)
+            self.driver = uc.Chrome(options=options, headless=True)
+            self.driver.implicitly_wait(10)
         except Exception as e:
-            print(f"Error setting up Chrome driver: {e}")
-            print("Make sure ChromeDriver is installed and in your PATH")
+            print(f"Error setting up undetected Chrome driver: {e}")
+            print("Check if UC dependencies are installed or permissions are correct")
+
     
     def discover_pages(self, base_url, max_pages=50):
         """Discover all available pages on the website"""
